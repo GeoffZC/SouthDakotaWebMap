@@ -1,0 +1,232 @@
+<!DOCTYPE html>
+
+<html>
+<head>
+<title>South Dakota Breweries</title>
+    <link rel="stylesheet" href="https://unpkg.com/leaflet@1.5.1/dist/leaflet.css"/>  
+    <script src="https://unpkg.com/leaflet@1.5.1/dist/leaflet.js"></script>
+    <script src="https://ajax.googleapis.com/ajax/libs/jquery/3.4.1/jquery.min.js"></script>
+    <script src="https://cdn.rawgit.com/gokertanrisever/leaflet-ruler/master/src/leaflet-ruler.js"></script>
+    <link rel="stylesheet" type="text/css" href="https://cdn.rawgit.com/gokertanrisever/leaflet-ruler/master/src/leaflet-ruler.css">
+    <link rel="stylesheet" href="/home/geoffcrowley/WebAppWork/FINALPROJECT.css" type = "text/css"/>
+    <script src="/home/geoffcrowley/WebAppWork//minijs.js" type="text/javascript"></script>
+    
+
+</head>
+
+<body>
+
+<style>
+body {
+            padding: 7;
+            margin: 0;
+        }
+        html, body, #map {
+            height: 100vh;
+            width: 100vw;
+        }
+.brewStyle{
+font-family: Bahnschrift;
+color: #4B0082;
+position: relative;
+top: 0px;
+left: 0px;
+padding: 10px;
+margin: 0px;
+text-transform: uppercase;
+letter-spacing: 0.2em;
+text-align: center;
+background-color: #FFD700;
+}
+</style>
+<div class = "brewStyle">
+<h1>Visit South Dakota Breweries!</h1>
+<p> The inspiration for this project came while visiting South Dakota on a road trip to see Mt. Rushmore, hike the Badlands and camp in the Black Hills. At a gas station heading towards Rapid City, my aspiring cartographic eye, caught a road map of all of the breweries, wineries and distillers in South Dakota. I picked it up for free and although I only managed to try one delicious beer on that trip it was an inspirational mapping product that hung near my desk until I decided to lay it to rest in digital format for everyone to use and enjoy on the web. 
+</p>
+
+<div id="SDSections">
+ <h4>Click a tab to see breweries in that area</h4>
+ <ul>
+  <li id="list1"><a href="#tab-1">Western, SD Breweries</a></li>
+  <li id = "list2"><a href="#tab-2">Central, SD Breweries</a></li>
+  <li id = "list3"><a href="#tab-3">Eastern, SD Breweries</a></li>
+ </ul>
+<div id="tab-1"><p>Firehouse Brewing Co., Crow Peak Brewing Co., Spearfish Brewing Co., Dakota Shivers Brewing, Sick-N-Twisted Brewing Co., The Knuckle Brewing Co., Lost Cabin Beer Co., Hay Camp Brewing Co., Miner Brewing Co., Mt. Rushmore Brewing Co., Highway 79 Brewing Co.</p></div>
+<div id="tab-2"><p>St. Charles Lodge, The Rusty Spur, Dakota Territory Brewing Co., The Depot, Bens Brewing Co.</p></div>
+<div id="tab-3"><p>Fernson Brewing Co., Watertown Brewing Co., Eponymous Brewing Co., Wooden Legs Brewing Co., Gandy Dancer Brew Works, Remedy Brewing Co., WoodGrain Brewing Co., Obscure Brewing Co., A Homestead Brewery, Hydra Beer Co., Granite City Food & Brewery</p></div>
+
+    <script src="https://code.jquery.com/ui/1.11.1/jquery-ui.js"
+    integrity="sha256-/2tw2EWTMuKYJ22GFr6X5vPF1kkl5mb75npmfM4JUPU="
+    crossorigin="anonymous"></script>
+    <script>
+    window.jQuery || document.write('<script src="js/jquery-1.10.2.js"><\/script>')
+    </script>
+
+<script>
+  $(function() {
+    $('#SDSections').tabs();
+  });
+</script>
+
+
+</div>
+
+<h4>Click the measure tool in the top left corner of the map to find your distance from a South Dakota brewery or between South Dakota breweries.</h4>
+<h4>Press the 'ESC' key twice to exit measurement tool.</h4>
+
+</div>
+
+<div id=map></div>
+
+<script>
+$(document).ready(function(){
+var map = L.map('map', { center: [41.292062, -99.923009], zoom: 5});
+var layer = new L.tileLayer('https://{s}.tile.thunderforest.com/pioneer/{z}/{x}/{y}.png?apikey=3fa2d45823a04d1d8a85c972d95a7cd5').addTo(map);
+ var options = {
+      position: 'topleft',         // Leaflet control position option
+      circleMarker: {               // Leaflet circle marker options for points used in this plugin
+        color: 'DodgerBlue',
+        radius: 2
+      },
+      lineStyle: {                  // Leaflet polyline options for lines used in this plugin
+        color: 'gold',
+        dashArray: '1,6'
+      },
+      lengthUnit: {                 // You can use custom length units. Default unit is kilometers.
+        display: 'mi',              // This is the display value will be shown on the screen. Example: 'meters'
+        decimal: 2,                 // Distance result will be fixed to this value. 
+        factor: null,               // This value will be used to convert from kilometers. Example: 1000 (from kilometers to meters)  
+        label: 'Distance:'           
+      },
+      angleUnit: {
+        display: '&deg;',           // This is the display value will be shown on the screen. Example: 'Gradian'
+        decimal: 2,                 // Bearing result will be fixed to this value.
+        factor: null,                // This option is required to customize angle unit. Specify solid angle value for angle unit. Example: 400 (for gradian).
+        label: 'Bearing:'
+      }
+    };
+
+L.control.ruler(options).addTo(map);
+var myIcon = L.icon({
+iconUrl: 'Mug.png',
+iconSize: [30, 40]
+});
+var empty = L.icon({
+iconUrl: 'empty.png',
+iconSize: [30, 40]
+});
+function foundLocation(e){
+var mydate = new Date (e.timestamp);
+L.marker(e.latlng, {icon: empty}).addTo(map).bindPopup("<h1>This is your current location.</h1><p>Your beer glass is empty! Head to South Dakota for an ice cold one!</p>");
+}
+function notFoundLocation(e){
+alert("Unable to find your location. You may need to use another browser or enable Geolocation.");
+}
+map.on('locationfound', foundLocation);
+map.on('locationerror', notFoundLocation);
+map.locate({setView: true, maxZoom:5});
+//marks GO HERE
+var thunderURL = 'https://{s}.tile.thunderforest.com/pioneer/{z}/{x}/{y}.png?apikey=3fa2d45823a04d1d8a85c972d95a7cd5';
+var esriURL = 'https://server.arcgisonline.com/ArcGIS/rest/services/World_Imagery/MapServer/tile/{z}/{y}/{x}';
+var miniLayer = new L.TileLayer(thunderURL);
+var miniLayer2 = new L.TileLayer(esriURL);
+
+var brewGeoJson = { 
+"type": "FeatureCollection",
+"name": "waypoints",
+"crs": { "type": "name", "properties": { "name": "urn:ogc:def:crs:OGC:1.3:CRS84" } },
+"features": [
+{ "type": "Feature", "properties": { "name": "222 W. 3rd Street Yankton", "desc": "222 West 3rd Street, Yankton, Yankton County, SD, US" }, "geometry": { "type": "Point", "coordinates": [ -97.395007, 42.869989 ] } },
+{ "type": "Feature", "properties": { "name": "125 US-14 Spearfish", "desc": "West Highway 14, Spearfish, Lawrence County, SD, US" }, "geometry": { "type": "Point", "coordinates": [ -103.88887, 44.517953 ] } },
+{ "type": "Feature", "properties": { "name": "717 W. Main St Lead", "desc": "West Main Street, Lead, Lawrence County, SD, US" }, "geometry": { "type": "Point", "coordinates": [ -103.76899, 44.351925 ] } },
+{ "type": "Feature", "properties": { "name": "127 N. Broadway Watertown", "desc": "North Broadway, Watertown, Codington County, SD, US" }, "geometry": { "type": "Point", "coordinates": [ -97.112891, 44.905847 ] } },
+{ "type": "Feature", "properties": { "name": "126 Main St. Brookings", "desc": "Main Street, Bushnell, Brookings County, SD, US" }, "geometry": { "type": "Point", "coordinates": [ -96.642454, 44.328644 ] } },
+{ "type": "Feature", "properties": { "name": "1400 E Robur Dr Sioux Falls", "desc": "East Robur Drive, Sioux Falls, Minnehaha County, SD, US" }, "geometry": { "type": "Point", "coordinates": [ -96.707594, 43.607769 ] } },
+{ "type": "Feature", "properties": { "name": "610 Main St Rapid City", "desc": "610 Main Street, Rapid City, Pennington County, SD, US" }, "geometry": { "type": "Point", "coordinates": [ -103.227556, 44.081441 ] } },
+{ "type": "Feature", "properties": { "name": "420 E. 8th St Sioux Falls", "desc": "420 East 8th Street, Sioux Falls, Minnehaha County, SD, US" }, "geometry": { "type": "Point", "coordinates": [ -96.721859, 43.548875 ] } },
+{ "type": "Feature", "properties": { "name": "2620 S. Louise Ave.Sioux Falls", "desc": "South Louise Avenue, Sioux Falls, Lincoln County, SD, US" }, "geometry": { "type": "Point", "coordinates": [ -96.767317, 43.480268 ] } },
+{ "type": "Feature", "properties": { "name": "601 Kansas City St Rapid City", "desc": "Kansas City Street, Rapid City, Pennington County, SD, US" }, "geometry": { "type": "Point", "coordinates": [ -103.225813, 44.078647 ] } },
+{ "type": "Feature", "properties": { "name": "27631 SD Hwy 79 Hot Springs", "desc": "Hot Springs, Fall River County, SD, US" }, "geometry": { "type": "Point", "coordinates": [ -103.474363, 43.431646 ] } },
+{ "type": "Feature", "properties": { "name": "2425 S. Shirley Ave #112 Sioux Falls", "desc": "South Shirley Avenue, Sioux Falls, Minnehaha County, SD, US" }, "geometry": { "type": "Point", "coordinates": [ -96.776112, 43.524382 ] } },
+{ "type": "Feature", "properties": { "name": "1401 W. Omaha St. #3 Rapid City", "desc": "1401 West Omaha Street, Rapid City, Pennington County, SD, US" }, "geometry": { "type": "Point", "coordinates": [ -103.242219, 44.083954 ] } },
+{ "type": "Feature", "properties": { "name": "23845 US-385 Hill City", "desc": "Hill City, Pennington County, SD, US" }, "geometry": { "type": "Point", "coordinates": [ -103.575193, 43.932486 ] } },
+{ "type": "Feature", "properties": { "name": "140 Mount Rushmore Rd Custer", "desc": "Mount Rushmore Road, Custer, Custer County, SD, US" }, "geometry": { "type": "Point", "coordinates": [ -103.595712, 43.76746 ] } },
+{ "type": "Feature", "properties": { "name": "741 N. Main St. #130 Spearfish", "desc": "North Main Street, Spearfish, Lawrence County, SD, US" }, "geometry": { "type": "Point", "coordinates": [ -103.858067, 44.486793 ] } },
+{ "type": "Feature", "properties": { "name": "931 1st St Sturgis", "desc": "931 1st Street, Sturgis, Meade County, SD, US" }, "geometry": { "type": "Point", "coordinates": [ -103.511997, 44.415262 ] } },
+{ "type": "Feature", "properties": { "name": "113 E. Kemp Ave Watertown", "desc": "East Kemp Avenue, Watertown, Codington County, SD, US" }, "geometry": { "type": "Point", "coordinates": [ -97.110463, 44.899647 ] } },
+{ "type": "Feature", "properties": { "name": "309 5th St #100 Brookings", "desc": "309 5th Street, Brookings, Brookings County, SD, US" }, "geometry": { "type": "Point", "coordinates": [ -96.799615, 44.310474 ] } },
+{ "type": "Feature", "properties": { "name": "101 S. Phillips Ave #100 Sioux Falls", "desc": "101 #100 South Phillips Avenue, Sioux Falls, Minnehaha County, SD, US" }, "geometry": { "type": "Point", "coordinates": [ -96.72725, 43.547085 ] } },
+{ "type": "Feature", "properties": { "name": "207 E Capitol Ave #109, Pierre", "desc": "East Kemp Avenue, Watertown, Codington County, SD, US" }, "geometry": { "type": "Point", "coordinates": [ 44.659871, -100.331097 ] } },
+{ "type": "Feature", "properties": { "name": "205 E 5th St, Murdo", "desc": "309 5th Street, Brookings, Brookings County, SD, US" }, "geometry": { "type": "Point", "coordinates": [ 43.990929, -100.729820] } },
+{ "type": "Feature", "properties": { "name": "210 S Main St, Mitchell", "desc": "101 #100 South Phillips Avenue, Sioux Falls, Minnehaha County, SD, US" }, "geometry": { "type": "Point", "coordinates": [ 43.839265, -98.038408 ] } }
+
+]
+}
+
+
+var brews = L.geoJson(brewGeoJson, {
+pointToLayer: function (features, latlng) {
+return new L.Marker(latlng, {icon: myIcon});
+}
+});
+
+var miniLayers = new L.LayerGroup([miniLayer2, brews]);
+var miniMap = new L.Control.MiniMap(miniLayers, {position: 'bottomleft', width:350, height: 200, zoomLevelOffset: -1}).addTo(map);
+
+
+var marker1 = L.marker([43.517023, -96.493322], {icon: myIcon}).bindPopup("<h2>A Homestead Brewery</h2> <p>26685 486th Ave Valley Springs</p>");
+var marker2 = L.marker([42.86998, -97.395007], {icon: myIcon}).bindPopup("<h2>Bens Brewing Co.</h2> <p>222 W. 3rd Street Yankton</p>");
+var marker3 = L.marker([44.517953, -103.88887], {icon: myIcon}).bindPopup("<h2>Crow Peak Brewing Co.</h2> <p>125 US-14 Spearfish</p>");
+var marker4 = L.marker([44.351925, -103.76899], {icon: myIcon}).bindPopup("<h2>Dakota Shivers Brewing</h2> <p>717 W. Main St Lead</p>");
+var marker5 = L.marker([45.462466, -98.488485], {icon: myIcon}).bindPopup("<h2>Dakota Territory Brewing Co.</h2> <p>224 S. Main Ave Aberdeen</p>");
+var marker6 = L.marker([44.905847, -97.112891], {icon: myIcon}).bindPopup("<h2>Dempsey's Brewery, Pub & Restaurant</h2> <p>127 N. Broadway Watertown</p>");
+var marker7 = L.marker([44.328644, -96.642454], {icon: myIcon}).bindPopup("<h2>Eponymous Brewing Co.</h2> <p>126 Main St. Brookings</p>");
+var marker8 = L.marker([43.607769, -96.707594], {icon: myIcon}).bindPopup("<h2>Fernson Brewing Co.</h2> <p>1400 E Robur Dr Sioux Falls</p>");
+var marker9 = L.marker([44.081441, -103.227556], {icon: myIcon}).bindPopup("<h2>Firehouse Brewing Co.</h2> <p>610 Main St Rapid City</p>");
+var marker10 = L.marker([43.548875, -96.721859], {icon: myIcon}).bindPopup("<h2>Gandy Dancer Brew Works</h2> <p>420 E. 8th St Sioux Falls</p>");
+var marker11 = L.marker([43.480268, -96.767317], {icon: myIcon}).bindPopup("<h2>Granite City Food & Brewery</h2> <p>2620 S. Louise Ave.Sioux Falls</p>");
+var marker12 = L.marker([44.078647, -103.225813], {icon: myIcon}).bindPopup("<h2>Hay Camp Brewing Co.</h2> <p>601 Kansas City St Rapid City</p>");
+var marker13 = L.marker([43.431646, -103.474363], {icon: myIcon}).bindPopup("<h2>Highway 79 Brewing Co.</h2> <p>27631 SD Hwy 79 Hot Springs</p>");
+var marker14 = L.marker([43.524382, -96.776112], {icon: myIcon}).bindPopup("<h2>Hydra Beer Co.</h2> <p>2425 S. Shirley Ave #112 Sioux Falls</p>");
+var marker15 = L.marker([44.083954, -103.242219], {icon: myIcon}).bindPopup("<h2>Lost Cabin Beer Co.</h2> <p>1401 W. Omaha St. #3 Rapid City</p>");
+var marker16 = L.marker([43.932486, -103.575193], {icon: myIcon}).bindPopup("<h2>Miner Brewing Co.</h2> <p>23845 US-385 Hill City</p>");
+var marker17 = L.marker([43.76746, -103.595712], {icon: myIcon}).bindPopup("<h2>Mt. Rushmore Brewing Co.</h2> <p>140 Mount Rushmore Rd Custer</p>");
+var marker18 = L.marker([43.545165, -96.662086], {icon: myIcon}).bindPopup("<h2>Obscure Brewing Co.</h2> <p>5200 E. Garfield Ave Sioux Falls</p>");
+var marker19 = L.marker([43.547957, -96.722333], {icon: myIcon}).bindPopup("<h2>Remedy Brewing Co.</h2> <p>401 E. 8th St #120 Sioux Falls</p>");
+var marker20 = L.marker([44.376681, -103.731007], {icon: myIcon}).bindPopup("<h2>Sick-N-Twisted Brewing Co.</h2> <p>23851 Highway 385 Hill City</p>");
+var marker21 = L.marker([44.415262, -103.511997], {icon: myIcon}).bindPopup("<h2>The Knuckle Brewing Co.</h2> <p>931 1st St Sturgis</p>");
+var marker22 = L.marker([44.486793, -103.85806], {icon: myIcon}).bindPopup("<h2>Spearfish Brewing Co.</h2> <p>741 N. Main St. #130 Spearfish</p>");
+var marker23 = L.marker([44.899647, -97.110463], {icon: myIcon}).bindPopup("<h2>Watertown Brewing Co.</h2> <p>113 E. Kemp Ave Watertown</p>");
+var marker24 = L.marker([44.310474, -96.799615], {icon: myIcon}).bindPopup("<h2>Wooden Legs Brewing Co.</h2> <p>309 5th St #100 Brookings</p>");
+var marker25 = L.marker([43.547085, -96.72725], {icon: myIcon}).bindPopup("<h2>WoodGrain Brewing Co.</h2> <p>101 S. Phillips Ave #100 Sioux Falls</p>");
+var marker26 = L.marker([44.038082, -103179286], {icon: myIcon}).bindPopup("<h2>Zymurcracy Beer Co.</h2> <p>4624 Creek Dr., Suite 6, Rapid City</p>");
+var marker27 = L.marker([44.659871, -100.331097], {icon: myIcon}).bindPopup("<h2>St. Charles Lodge</h2> <p>207 E Capitol Ave #109, Pierre</p>");
+var marker28 = L.marker([43.990929, -100.729820], {icon: myIcon}).bindPopup("<h2>The Rusty Spur</h2> <p>205 E 5th St, Murdo</p>");
+var marker29 = L.marker([43.839265, -98.038408], {icon: myIcon}).bindPopup("<h2>The Depot</h2> <p>210 S Main St, Mitchell</p>");
+
+
+var element = document.getElementById("list1").addEventListener('click', function(){
+   var markerGroup = L.featureGroup([marker9, marker3, marker22, marker4, marker20, marker21, marker15, marker12, marker16, marker17, marker13]).addTo(map);
+   
+});
+
+
+var element = document.getElementById("list2").addEventListener('click', function(){
+	   var markerGroup = L.featureGroup([marker27, marker28, marker29, marker5, marker2]).addTo(map);
+
+});
+
+var element = document.getElementById("list3").addEventListener('click', function(){
+   var markerGroup = L.featureGroup([marker8, marker23, marker7, marker24, marker10, marker19, marker25, marker25, marker18, marker1, marker14, marker11]).addTo(map);
+});
+
+
+
+});
+</script>
+
+</body>
+
+</html>
+
+
